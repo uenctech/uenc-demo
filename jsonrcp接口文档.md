@@ -23,7 +23,7 @@
   "jsonrpc": "2.0",
   "id": "1",
   "result": {
-    "height": 100
+    "height": "100"
   }
 }
 ```
@@ -47,7 +47,7 @@ height 区块高度
   "id": "1",
   "method": "get_txids_by_height",
   "params": {
-    "height": 170
+    "height": "170"
   }
 }
 ```
@@ -94,7 +94,7 @@ height 区块高度
   "jsonrpc": "2.0",
   "id": "1",
   "result": {
-    "balance": 100
+    "balance": "100"
   }
 }
 ```
@@ -139,11 +139,11 @@ balance  钱包余额
         "vout": [
             {
                 "address": "1KDSDiooaAdWB84YXFLkceV6xwkpEJCbmw",
-                "value": 100
+                "value": "100.0"
             },
             {
                 "address": "1vkS46QffeM4sDMBBjuJBiVkMQKY7Z8Tu",
-                "value": 9982
+                "value": "9982.0"
             }
         ]
   	}   
@@ -155,9 +155,11 @@ balance  钱包余额
 请求：
 hash  交易hash
 响应：
+hash  交易hash
+time  时间戳
 vin   交易转出地址
 vout  交易转入地址
-value 交易金额
+value 交易金额 
 ```
 
 
@@ -172,8 +174,8 @@ value 交易金额
   "method": "create_tx_message",
   "params": {
     "from_addr": [{"addr":"1126G5Cjd6zM4NdqhDZmYSCyGMVshGraEF"}],
-    "to_addr":[{"addr":"16psRip78QvUruQr9fMzr8EomtFS1bVaXk","value":2}],
-    "fee":1
+    "to_addr":[{"addr":"16psRip78QvUruQr9fMzr8EomtFS1bVaXk","value":"2.0"}],
+    "fee":"0.5"
   }
 }
 ```
@@ -213,8 +215,7 @@ tx_encode_hash  交易体hash(待签名信息)
   "method": "send_tx",
   "params": {
   "tx_data": "EKux4LzXs+wCIiIxMTI2RzVDamQ2ek00TmRxaERabVlTQ3lHTVZzaEdyYUVGMig0YzIzODExZWVjZTViNjgwN2Y1NWU3Yzg4NzhiZjQwYTdjMWU2YmVkQkYKRApANWJhZjNhMzk1YjM5MzMyMDRjODdkMzlhYmUzZWYxZGY3YmRkNGZhOWY5ZGU2ZjNlZGNkYzA3YTllMGI5YjY0ZBABQkYKRApANjFmMjQ3ZDAzYWUyNzkyYjE1NDg2ZGJkYzY2YjQ2OGVmYjRlNWRlM2QwMzZhNzg0MTIxMGNiYTMwZWFkOTEzZRABQkQKQgpAODA0ZmQ1YWE3NWVmYzMxMGQ3NDYwMzU3NGQyNmJhZmI3ZTM3YjE4NmEwYmNlYWQzNjkyNjQ2YzViYTBkNzhkZUooCICJehIiMTZwc1JpcDc4UXZVcnVRcjlmTXpyOEVvbXRGUzFiVmFYa0oqCMC1pIMlEiIxMTI2RzVDamQ2ek00TmRxaERabVlTQ3lHTVZzaEdyYUVGUkR7Ikdhc0ZlZSI6MTAwMDAwMCwiTmVlZFZlcmlmeVByZUhhc2hDb3VudCI6MywiVHJhbnNhY3Rpb25UeXBlIjoidHgifQ==",
-  "tx_signature":"YjM5MzMyMDRjODdkMzlhYmUzZWYxZGY3YmR",	     	                                "public_key":"ApANWJhZjNhMzk1YjM5MzMyMDRjODdkMzlhYmUzZWYxZGY3YmRkNGZhOWY5ZGU2ZjNlZGNkYzA3YTllMGI5YjY0ZBABQkYKRApANjFmMjQ3ZDAzYWUyNzkyYjE1NDg2ZGJkYzY2YjQ2OGVmYjRlNWRlM2QwMzZhNzg0MTIxMGNiYTMwZWFkOTEz",
-    "fee":1
+  "tx_signature":"YjM5MzMyMDRjODdkMzlhYmUzZWYxZGY3YmR",	     	                                "public_key":"ApANWJhZjNhMzk1YjM5MzMyMDRjODdkMzlhYmUzZWYxZGY3YmRkNGZhOWY5ZGU2ZjNlZGNkYzA3YTllMGI5YjY0ZBABQkYKRApANjFmMjQ3ZDAzYWUyNzkyYjE1NDg2ZGJkYzY2YjQ2OGVmYjRlNWRlM2QwMzZhNzg0MTIxMGNiYTMwZWFkOTEz"
   }
 }
 ```
@@ -235,7 +236,6 @@ tx_encode_hash  交易体hash(待签名信息)
 tx_data         交易体(base64编码)
 tx_signature    交易体hash的签名信息
 public_key      公钥(base64编码)
-fee				交易燃料费
 响应：
 tx_hash         交易hash(可通过此hash查询完整交易信息)
 ```

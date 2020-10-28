@@ -157,7 +157,7 @@ balance  字符串类型	  钱包余额
   "id": "1",
   "method": "get_tx_by_txid",
   "params": {
-    "hash": "772298b54a30e8b9e51b677a497369e19c3bc8ad500bf418b968638fd5d2960f"
+    "hash": "3bb0c305a59c45a35eb48fef3ac5a9f42104a083288b867572fa07b9a7961baa"
   }
 }
 ```
@@ -170,23 +170,29 @@ balance  字符串类型	  钱包余额
     "id": "1",
     "jsonrpc": "2.0",
     "result": {
-        "hash": "772298b54a30e8b9e51b677a497369e19c3bc8ad500bf418b968638fd5d2960f",
-        "time": 1602641586086592,
+        "hash": "3bb0c305a59c45a35eb48fef3ac5a9f42104a083288b867572fa07b9a7961baa",
+        "time": 1603854991179495,
         "vin": [
-            "1vkS46QffeM4sDMBBjuJBiVkMQKY7Z8Tu"
+            {
+                "address": "1BuFpDmH2bJhqxQoyv8cC8YL3mU2TnUDES",
+                "output_index": 0,
+                "output_value": "1000.000000",
+                "prev_hash": "4df2ac157683a5553503731aa74495c556f46faf11c595b95ee5980f8b5013b0"
+            }
         ],
         "vout": [
             {
-                "address": "1BmY6N9EQCbS8haRuJ1NuzHSQkTU5c4F5j",
-                "value": "1000.000000"
+                "address": "1FoQKZdUNeBXV2nTba6e354m5JrQ4rHYgA",
+                "value": "10.000000"
             },
             {
-                "address": "1vkS46QffeM4sDMBBjuJBiVkMQKY7Z8Tu",
-                "value": "99998998.400000"
+                "address": "1BuFpDmH2bJhqxQoyv8cC8YL3mU2TnUDES",
+                "value": "989.000000"
             }
         ]
     }
 }
+
 
 失败返回：
 没有查找到该笔交易返回：
@@ -213,14 +219,22 @@ balance  字符串类型	  钱包余额
 ### 字段说明
 ```
 请求：
-hash  	字符串类型		 	交易hash
+hash  			字符串类型		 	交易hash
 响应：
-hash  	字符串类型		 	交易hash
-time  	无符号64位整型   		时间戳
-vin   	json数组		  	  交易转出地址
-vout  	json数组		      交易转入地址和金额组成的json对象
-address 字符串类型		    交易转入地址
-value 	字符串类型		    交易金额 
+hash  			字符串类型		 	交易hash
+time  			无符号64位整型   		时间戳
+
+vin   			json数组		  	  交易输入
+address 		字符串类型			交易转出地址
+prev_hash		字符串类型			utxo所在的交易hash
+output_index	整型				  索引
+output_value	字符串类型			utxo金额
+
+vout  			json数组		      交易转入地址和金额组成的json对象
+address 		字符串类型		    交易转入地址
+value 			字符串类型		    交易金额 
+
+实际花费的fee计算：vin里的output_value 减去 vout 里的所有value
 ```
 
 

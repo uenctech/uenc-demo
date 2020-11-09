@@ -408,3 +408,102 @@ tx_hash         字符串类型		交易hash(可通过此hash查询完整交易�
 avg_fee         字符串类型		最近100个高度区块fee的平均值,如果高度不足100,则是所有区块的平均值
 ```
 
+
+
+## 八、生成钱包地址、公钥和私钥（generate_wallet）
+
+### 请求
+
+``` 
+{
+  "jsonrpc": "2.0",
+  "id": "1",
+  "method": "generate_wallet"
+}
+```
+
+### 返回值
+
+```
+成功返回：
+{
+    "id": "1",
+    "jsonrpc": "2.0",
+    "result": {
+        "address": "1BGmh7NgY7spKRBHJkwQTZosaHGiXfynvj",
+        "private_key": "xAEF+gTQZ6PmtH3hlmygJpAVxBpKHBa3Zw8iMxRjlbQ=",
+        "public_key": "ICD6bienPIel1KE4WmGlQ6bC6M+HiPTw3+et036AUaTVtLr1iV1DMFFx2O9VYi/MUXOZyKK87s/GjPE+eN9A+wEl"
+    }
+}
+失败返回：
+{
+    "error": {
+        "code": -32601,
+        "message": "Method not found"
+    },
+    "id": "",
+    "jsonrpc": "2.0"
+}
+
+```
+
+### 字段说明
+
+```
+响应：
+address  	字符串类型	  	钱包地址
+private_key 字符串类型 		base64编码后的私钥
+public_key  字符串类型 		base64编码后的公钥
+```
+
+
+
+## 九、生成签名信息（generate_sign）
+
+### 请求
+
+``` 
+{
+  "jsonrpc": "2.0",
+  "id": "1",
+  "method": "generate_sign",
+  	"params": {
+		"data": "b3b8f15852efddbdfe8aa759a2f026488350b6f56a4cae7494ea3cbba0f8a5c5",
+		"private_key": "xAEF+gTQZ6PmtH3hlmygJpAVxBpKHBa3Zw8iMxRjlbQ="
+	}
+}
+```
+
+### 返回值
+
+```
+成功返回：
+{
+    "id": "1",
+    "jsonrpc": "2.0",
+    "result": {
+        "message": "Ggy2ouJDIZw9/ShvZUwXyVgsAXSFLsxvRCh42elAf+Klit6DJH/jUY6Z3Km/W7VhPKinrsHcaEcwYqIUIwopWQ=="
+    }
+}
+失败返回：
+{
+    "error": {
+        "code": -32602,
+        "message": "Invalid params"
+    },
+    "id": "1",
+    "jsonrpc": "2.0"
+}
+
+```
+
+### 字段说明
+
+```
+请求：
+data			字符串类型		待签名信息, create_tx_message方法调用后返回的tx_encode_hash
+private_key		字符串类型		base64编码后的私钥
+响应：
+message  		字符串类型		base64编码后的已签名信息
+```
+

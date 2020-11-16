@@ -173,6 +173,7 @@ balance  字符串类型	  钱包余额
         "hash": "3bb0c305a59c45a35eb48fef3ac5a9f42104a083288b867572fa07b9a7961baa",
         "time": 1603854991179495,
         "type": "tx"
+        "height": ""
         "vin": [
             {
                 "address": "1BuFpDmH2bJhqxQoyv8cC8YL3mU2TnUDES",
@@ -228,7 +229,7 @@ time  			无符号64位整型   		时间戳
 type			字符串类型			交易的类型,有三种类型,只需要处理正常交易类型：    "tx"		  	正常交易
 													  	  					"pledge"  		质押交易
 													  	  					"redeem" 		解质押交易
-
+height			字符串类型			当前交易所在区块高度
 vin   			json数组		  	  交易输入
 address 		字符串类型			交易转出地址
 prev_hash		字符串类型			utxo所在的交易hash

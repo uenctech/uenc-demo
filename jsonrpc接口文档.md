@@ -534,14 +534,18 @@ message  		字符串类型		base64编码后的已签名信息
         "total": 1,
         "transaction": [
             {
-                "amount": "501000000",
+                "amount": "501",
                 "from": [
                     "1vkS46QffeM4sDMBBjuJBiVkMQKY7Z8Tu"
                 ],
+                "gap": "0.050000",
                 "hash": "4303e57195616797f77d7db888ef15d677740d8f10a9a8e29370d35c3cc853fb",
-                "timestamp": 1608261416,
+                "timestamp": 1609313648455902,
                 "to": [
                     "1HjrxHbBuuyNQDwKMh4JtqfuGiDCLodEwC"
+                ],
+                "toAmount": [
+                    "501.000000"
                 ],
                 "vin": [
                     "7d9a0cb698db789b5f294343209b94ca69119f02593cb5607069623810f6ed69",
@@ -565,6 +569,67 @@ total           数值类型        处于挂起的交易的个数
 transaction     数组类型        交易内容,包括交易的哈希，发起方，接收方，金额，时间戳
 ```
 
+### 十一、查询失败的交易（get_failure_transaction）
+
+#### 请求
+
+``` 
+{
+  "jsonrpc": "2.0",
+  "id": "1",
+  "method": "get_failure_transaction",
+  	"params": {
+		"address": "1vkS46QffeM4sDMBBjuJBiVkMQKY7Z8Tu"
+	}
+}
+```
+
+#### 返回值
+
+```
+成功返回：
+{
+    "id": "1",
+    "jsonrpc": "2.0",
+    "result": {
+        "total": 1,
+        "transaction": [
+            {
+                "amount": "500",
+                "from": [
+                    "1vkS46QffeM4sDMBBjuJBiVkMQKY7Z8Tu"
+                ],
+                "gap": "0.050000",
+                "hash": "13f9730d0ce5fe401352f42fdce3677e324d15518857c02e0aafc6b5456a7676",
+                "timestamp": 1609313648455902,
+                "to": [
+                    "1HjrxHbBuuyNQDwKMh4JtqfuGiDCLodEwC"
+                ],
+                "toAmount": [
+                    "500.000000"
+                ],
+                "vin": [
+                    "b8930d79b8ecbdd2141d3b4fa85fa7dc0e4c6b3c3e30a379d573aacd34299b18",
+                    "c99ac37f9a9c591e51ea31551455f3662eac4e54a1c27923a81e7966c0eadbfa",
+                    "08cb13dea1510860de5549a71c8142e16af6698b9b0d9bea3a813789727d084f"
+                ]
+            }
+        ]
+    }
+}
+
+```
+
+#### 字段说明
+
+```
+请求：
+address         字符串类型      交易发起方地址
+响应：
+total           数值类型        失败的交易的个数
+transaction     数组类型        失败的交易内容,包括交易的哈希，发起方，接收方，金额，时间戳
+```
+
 
 ## 流程说明
 
@@ -572,20 +637,15 @@ transaction     数组类型        交易内容,包括交易的哈希，发起�
 
 ![](jsonrpc接口文档.assets/send_tx.png) 
 
-1. 通过create_tx_message接口向服务器节点发起交易请求，包括from_addr，to_addr和fee等信息，创建交易体，获得tx_data和tx_encode_hash信息。
-2. 通过generate_sign接口用私钥对 tx_encode_hash 信息进行签名，获得签名信息tx_signature。这里亦可使用本地动态库进行签名，详情请参考《动态库使用文档.md》。
-3. 通过 send_tx 接口 将tx_data，public_key，tx_encode_hash和tx_signature发送到服务器节点，得到该交易的tx_hash。
-4. 将tx_hash信息留存，待交易确认时查询用。
+1. 客户端通过create_tx_message接口向节点发起交易请求，包括from_addr，to_addr和fee等信息，节点创建交易体数据，客户端获得tx_data和tx_encode_hash信息。
+2. 客户端通过generate_sign接口向节点发送私钥和 tx_encode_hash 信息，节点对tx_encode_hash 信息进行签名，客户端获得签名信息tx_signature。这里亦可使用本地动态库进行签名，详情请参考《动态库使用文档.md》。
+3. 客户端通过 send_tx 接口 将tx_data，public_key，tx_encode_hash和tx_signature发送到节点，该交易通过节点发送到全网进行签名验证，客户端得到该交易的tx_hash。
+4. 客户端将tx_hash信息留存，待交易确认时查询用。
+5. 客户端可用get_pending_transaction 接口向节点发送地址信息获得当前地址发起的已挂起的交易哈希，判断是否和第4步留存的tx_hash一致来判断该交易是否在进行中，若交易进行中则不能再次发起交易，需等待交易上链或是5分钟后挂起状态结束后再进行交易。
 
-### 验证交易过程：
+### 验证交易是否上链：
 
 ![](jsonrpc接口文档.assets/comfirm_tx.png) 
 
-1. 在发起交易流程后10分钟后，用get_tx_by_txid接口将tx_hash信息异步发送到n个节点服务器。
-2. 通过get_tx_by_txid接口返回值判断该交易是否在n个节点中都上链成功，若大部分（约75%以上）节点有该交易，则该表示交易发送成功，否则交易可能失败。
-
-### 验证交易是否上链
-1.通过get_height接口向服务端请求获取到最高高度，最高高度减去20，得到一个height的值然后通过get_txids_by_height接口向服务器发起请求，参数为height，获取到所有交易hash列表信息。
-2.通过get_tx_by_txid接口向服务器发起请求，参数为hash，获取到交易详情包括交易hash、交易时间time、交易的vin、交易的vout，通过交易的vout信息可以查看自身账号和交易金额是否在交易详情里边即可确认是否上链。
-3.从最高高度减去20得到一个heiht值依次加一个高度逐一调用get_txids_by_height接口向服务器请求，获取到hash列表，再通过get_tx_by_txid接口获取到交易详情就可以确认是否上链。
-
+1. 在发起交易流程后10分钟后，客户端用get_tx_by_txid接口将tx_hash信息发送到n（n为10-15个）个节点。
+2. 客户端通过get_tx_by_txid接口将交易哈希发送到节点，客户端通过返回值判断该交易是否在n个节点中都上链成功，若大部分（75%以上）的节点有该交易，则该表示交易发送成功，否则交易可能失败。

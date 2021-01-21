@@ -2,7 +2,21 @@
 ---------------------------
 
 说明：jsonrpc标准为2.0，文档中的数据皆为测试数据，请求方式为 POST
+默认端口为11190，可以在配置文件config.json中"http_port"属性中指定端口值
+可使用HTTP工具Postman或者Curl进行访问测试
+#### Postman示例
+```
+![](jsonrpc接口文档.assets/postman.png)
+Postman：新建"Request", 选择"POST",输入URL地址，需包含端口号11190（如：192.168.1.51:11190/）；
+选择Body,选择Raw选项，输入json请求内容，如{ "jsonrpc": "2.0", "method": "get_height", "id": "1" },
+填写完毕后，点击"Send"按钮，服务端响应请求并发回响应内容。
+```
 
+#### Curl示例
+```
+Curl: curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{ "jsonrpc": "2.0", "method": "get_height", "id": "1" }' 192.168.1.51:11190
+输入上面内容，即可访问get_height接口
+```
 
 
 ### 一、获取高度（get_height）
@@ -50,6 +64,11 @@ height 	 字符串类型 区块高度
 error    json对象  调用出错返回的结果信息 (相同字段以下不再重复)
 code     整型  	 错误码 (相同字段以下不再重复)
 message  字符串类型 错误描述 (相同字段以下不再重复)
+```
+
+#### 示例
+```
+curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{"jsonrpc": "2.0", "method": "get_height", "id": "1" }' 192.168.1.51:11190
 ```
 
 
@@ -100,6 +119,11 @@ height 	 字符串类型    区块高度
 result   json数组     当前区块高度所有交易hash组成的json数组
 ```
 
+#### 示例
+```
+curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{"jsonrpc": "2.0", "method": "get_txids_by_height", "params": {"height": "1"} }' 192.168.1.51:11190
+```
+
 
 
 ### 三、根据地址获取余额（get_balance）
@@ -144,6 +168,11 @@ result   json数组     当前区块高度所有交易hash组成的json数组
 address  字符串类型	  钱包地址
 响应：
 balance  字符串类型	  钱包余额
+```
+
+#### 示例
+```
+curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{"jsonrpc": "2.0", "id": "1", "method": "get_balance", "params": { "address":"1BuFpDmH2bJhqxQoyv8cC8YL3mU2TnUDES" } }' 192.168.1.51:11190
 ```
 
 
@@ -243,6 +272,11 @@ value 			字符串类型		    交易金额
 实际花费的fee计算：vin里的output_value 减去 vout 里的所有value
 ```
 
+#### 示例
+```
+curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{"jsonrpc": "2.0", "id": "1", "method": "get_tx_by_txid", "params": { "hash": "3bb0c305a59c45a35eb48fef3ac5a9f42104a083288b867572fa07b9a7961baa" } }' 192.168.1.51:11190
+```
+
 
 
 ### 五、创建交易体  (create_tx_message)
@@ -302,6 +336,11 @@ fee             交易燃料费
 响应：
 tx_data         交易体(base64编码)
 tx_encode_hash  交易体hash(待签名信息)
+```
+
+#### 示例
+```
+curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{"jsonrpc": "2.0", "id": "1", "method": "create_tx_message", "params": { "from_addr": ["1BuFpDmH2bJhqxQoyv8cC8YL3mU2TnUDES"], "to_addr": [{"addr": "1FoQKZdUNeBXV2nTba6e354m5JrQ4rHYgA", "value": "22.222222"}], "fee": "0.555555"} }' 192.168.1.51:11190
 ```
 
 
@@ -364,6 +403,11 @@ tx_encode_hash	字符串类型		交易体hash(待签名信息),创建交易体�
 tx_hash         字符串类型		交易hash(可通过此hash查询完整交易信息)
 ```
 
+#### 示例
+```
+curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{"jsonrpc": "2.0", "id": "1", "method": "send_tx", "params": { "tx_data":"ELvdqOvRuOwCIiIxQnVGcERtSDJiSmhxeFFveXY4Y0M4WUwzbVUyVG5VREVTMig4ZjU1M2U5ODA4MzM4MjZhMDIxYWQ5MTU4MDA5N2E5OGVkY2EzM2M3QkQKQgpAMjRkMjUxMzMxZGFkYjEyMGMyYmYxMDlhZDI2ODllOWNkMDcwYTAyZWJkZWQxNDA1ZTM5MGFlMmVhMDI0YjEzMEopCI6rzAoSIjFGb1FLWmRVTmVCWFYyblRiYTZlMzU0bTVKclE0ckhZZ0FKKgiwua+GAxIiMUJ1RnBEbUgyYkpocXhRb3l2OGNDOFlMM21VMlRuVURFU1JDeyJHYXNGZWUiOjU1NTU1NSwiTmVlZFZlcmlmeVByZUhhc2hDb3VudCI6MywiVHJhbnNhY3Rpb25UeXBlIjoidHgifQ==", "tx_signature": "N1ii0dikr0NJRvi7GXkjXOayD+mVcMfXF+49iOmOneYqYj2HHYzNm3Txj/otW/K7Dh3uBJ2Gb4nlTJW2AY3Dog==", "public_key": "ICBszM0aHCpWmDdEC3GMBL6DFN7XdWzijF33uvmWKMa1WbvWBk33+G9E4pSztJWlwDkvEt4dW4oGY8/sY2FJBtPG", "tx_encode_hash": "b3b8f15852efddbdfe8aa759a2f026488350b6f56a4cae7494ea3cbba0f8a5c5"} }' 192.168.1.51:11190
+```
+
 
 
 ### 七、获取最近100块高度的平均交易燃料费 （get_avg_fee）
@@ -407,6 +451,11 @@ tx_hash         字符串类型		交易hash(可通过此hash查询完整交易�
 ```
 响应：
 avg_fee         字符串类型		最近100个高度区块fee的平均值,如果高度不足100,则是所有区块的平均值
+```
+
+#### 示例
+```
+curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{"jsonrpc": "2.0", "method": "get_avg_fee", "id": "1" }' 192.168.1.51:11190
 ```
 
 
@@ -455,6 +504,11 @@ avg_fee         字符串类型		最近100个高度区块fee的平均值,如果�
 address  	字符串类型	  	钱包地址
 private_key 字符串类型 		base64编码后的私钥
 public_key  字符串类型 		base64编码后的公钥
+```
+
+#### 示例
+```
+curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{"jsonrpc": "2.0", "method": "generate_wallet", "id": "1" }' 192.168.1.51:11190
 ```
 
 
@@ -508,6 +562,13 @@ private_key		字符串类型		base64编码后的私钥
 message  		字符串类型		base64编码后的已签名信息
 ```
 
+#### 示例
+```
+curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{"jsonrpc": "2.0", "method": "generate_sign", "id": "1", "params": { "data": "b3b8f15852efddbdfe8aa759a2f026488350b6f56a4cae7494ea3cbba0f8a5c5", "private_key": "xAEF+gTQZ6PmtH3hlmygJpAVxBpKHBa3Zw8iMxRjlbQ=" } }' 192.168.1.51:11190
+```
+
+
+
 ### 十、查询正在挂起的交易（get_pending_transaction）
 
 #### 请求
@@ -518,7 +579,7 @@ message  		字符串类型		base64编码后的已签名信息
   "id": "1",
   "method": "get_pending_transaction",
   	"params": {
-		"address": "1vkS46QffeM4sDMBBjuJBiVkMQKY7Z8Tu"
+		"address": "1MpeeKXwH1ArnMJ85D161yfH1us471J86X"
 	}
 }
 ```
@@ -536,7 +597,7 @@ message  		字符串类型		base64编码后的已签名信息
             {
                 "amount": "501",
                 "from": [
-                    "1vkS46QffeM4sDMBBjuJBiVkMQKY7Z8Tu"
+                    "1MpeeKXwH1ArnMJ85D161yfH1us471J86X"
                 ],
                 "gap": "0.050000",
                 "hash": "4303e57195616797f77d7db888ef15d677740d8f10a9a8e29370d35c3cc853fb",
@@ -569,6 +630,13 @@ total           数值类型        处于挂起的交易的个数
 transaction     数组类型        交易内容,包括交易的哈希，发起方，接收方，金额，时间戳
 ```
 
+#### 示例
+```
+curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{"jsonrpc": "2.0", "method": "get_pending_transaction", "id": "1", "params": { "address": "1MpeeKXwH1ArnMJ85D161yfH1us471J86X"} }' 192.168.1.51:11190
+```
+
+
+
 ### 十一、查询失败的交易（get_failure_transaction）
 
 #### 请求
@@ -579,7 +647,7 @@ transaction     数组类型        交易内容,包括交易的哈希，发起�
   "id": "1",
   "method": "get_failure_transaction",
   	"params": {
-		"address": "1vkS46QffeM4sDMBBjuJBiVkMQKY7Z8Tu"
+		"address": "1MpeeKXwH1ArnMJ85D161yfH1us471J86X"
 	}
 }
 ```
@@ -597,7 +665,7 @@ transaction     数组类型        交易内容,包括交易的哈希，发起�
             {
                 "amount": "500",
                 "from": [
-                    "1vkS46QffeM4sDMBBjuJBiVkMQKY7Z8Tu"
+                    "1MpeeKXwH1ArnMJ85D161yfH1us471J86X"
                 ],
                 "gap": "0.050000",
                 "hash": "13f9730d0ce5fe401352f42fdce3677e324d15518857c02e0aafc6b5456a7676",
@@ -629,6 +697,12 @@ address         字符串类型      交易发起方地址
 total           数值类型        失败的交易的个数
 transaction     数组类型        失败的交易内容,包括交易的哈希，发起方，接收方，金额，时间戳
 ```
+
+#### 示例
+```
+curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{"jsonrpc": "2.0", "method": "get_failure_transaction", "id": "1", "params": { "address": "1MpeeKXwH1ArnMJ85D161yfH1us471J86X"} }' 192.168.1.51:11190
+```
+
 
 
 ## 流程说明

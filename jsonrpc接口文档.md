@@ -71,6 +71,26 @@ message  字符串类型 错误描述 (相同字段以下不再重复)
 curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{"jsonrpc": "2.0", "method": "get_height", "id": "1" }' 192.168.1.51:11190
 ```
 
+#### python示例
+
+```python
+# 1.获取高度
+def get_height():
+    data = {
+        "jsonrpc": "2.0",
+        "id": "1",
+        "method": "get_height"
+    }
+    headers = {
+        "Content-Type": "application/json"
+    }
+    res = requests.post(
+        url=domain,
+        data=json.dumps(data),
+        headers=headers)
+    print(res.text)
+```
+
 
 
 ### 二、通过高度获取所有交易hash  (get_txids_by_height)
@@ -124,6 +144,30 @@ result   json数组     当前区块高度所有交易hash组成的json数组
 curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{"jsonrpc": "2.0", "method": "get_txids_by_height", "params": {"height": "1"} }' 192.168.1.51:11190
 ```
 
+#### python示例
+
+```python
+# 2.通过高度获取所有交易hash
+def get_txids_by_height():
+    height = input("请输入要查询的高度:")
+    data = {
+        "jsonrpc": "2.0",
+        "id": "1",
+        "method": "get_txids_by_height",
+        "params": {
+            "height": height
+        }
+    }
+    headers = {
+        "Content-Type": "application/json"
+    }
+    res = requests.post(
+        url=domain,
+        data=json.dumps(data),
+        headers=headers)
+    print(res.text)
+```
+
 
 
 ### 三、根据地址获取余额（get_balance）
@@ -173,6 +217,31 @@ balance  字符串类型	  钱包余额
 #### 示例
 ```
 curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{"jsonrpc": "2.0", "id": "1", "method": "get_balance", "params": { "address":"1BuFpDmH2bJhqxQoyv8cC8YL3mU2TnUDES" } }' 192.168.1.51:11190
+```
+
+#### python示例
+
+```python
+# 3.根据地址获取余额（get_balance）
+def get_balance():
+    address = input("请输入要查询的地址:")
+    data = {
+        "jsonrpc": "2.0",
+        "id": "1",
+        "method": "get_balance",
+        "params": {
+        "address": address
+        }
+    }
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+    res = requests.post(
+        url=domain,
+        data=json.dumps(data),
+        headers=headers)
+    print(res.text)
 ```
 
 
@@ -277,6 +346,31 @@ value 			字符串类型		    交易金额
 curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{"jsonrpc": "2.0", "id": "1", "method": "get_tx_by_txid", "params": { "hash": "3bb0c305a59c45a35eb48fef3ac5a9f42104a083288b867572fa07b9a7961baa" } }' 192.168.1.51:11190
 ```
 
+#### python示例
+
+```python
+# 根据交易hash获取交易详情
+def get_tx_by_txid():
+    hash = input("请输入要查询的交易hash:")
+    data = {
+        "jsonrpc": "2.0",
+        "id": "1",
+        "method": "get_tx_by_txid",
+        "params": {
+            "hash": hash
+        }
+    }
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+    res = requests.post(
+        url=domain,
+        data=json.dumps(data),
+        headers=headers)
+    print(res.text)
+```
+
 
 
 ### 五、创建交易体  (create_tx_message)
@@ -341,6 +435,39 @@ tx_encode_hash  交易体hash(待签名信息)
 #### 示例
 ```
 curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{"jsonrpc": "2.0", "id": "1", "method": "create_tx_message", "params": { "from_addr": ["1BuFpDmH2bJhqxQoyv8cC8YL3mU2TnUDES"], "to_addr": [{"addr": "1FoQKZdUNeBXV2nTba6e354m5JrQ4rHYgA", "value": "22.222222"}], "fee": "0.555555"} }' 192.168.1.51:11190
+```
+
+#### python示例
+
+```python
+# 通过调用create_tx_message rpc接口，创建交易体数据
+def create_tx_message():
+    data = {
+        "jsonrpc": "2.0",
+        "id": "1",
+        "method": "create_tx_message",
+        "params": {
+            "from_addr": ["1FJpJQkhunjirwjKm85f1P6LcCGnF4Tfet"],
+            "to_addr": [{"addr": "1McVeDa3cM6A9939wKqLmnuxp863fZXXiC", "value": "4.1"}],
+            "fee": "0.1"
+        }
+    }
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+    res = requests.post(
+        url=domain,
+        data=json.dumps(data),
+        headers=headers)
+
+    result = json.loads(res.text)
+    tx_data = result["result"]["tx_data"]
+    tx_encode_hash = result["result"]["tx_encode_hash"]   
+    dict_list = {'tx_data': tx_data,
+                 'tx_encode_hash': tx_encode_hash}
+    return_value = json.dumps(dict_list)
+    return return_value 
 ```
 
 
@@ -408,6 +535,37 @@ tx_hash         字符串类型		交易hash(可通过此hash查询完整交易�
 curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{"jsonrpc": "2.0", "id": "1", "method": "send_tx", "params": { "tx_data":"ELvdqOvRuOwCIiIxQnVGcERtSDJiSmhxeFFveXY4Y0M4WUwzbVUyVG5VREVTMig4ZjU1M2U5ODA4MzM4MjZhMDIxYWQ5MTU4MDA5N2E5OGVkY2EzM2M3QkQKQgpAMjRkMjUxMzMxZGFkYjEyMGMyYmYxMDlhZDI2ODllOWNkMDcwYTAyZWJkZWQxNDA1ZTM5MGFlMmVhMDI0YjEzMEopCI6rzAoSIjFGb1FLWmRVTmVCWFYyblRiYTZlMzU0bTVKclE0ckhZZ0FKKgiwua+GAxIiMUJ1RnBEbUgyYkpocXhRb3l2OGNDOFlMM21VMlRuVURFU1JDeyJHYXNGZWUiOjU1NTU1NSwiTmVlZFZlcmlmeVByZUhhc2hDb3VudCI6MywiVHJhbnNhY3Rpb25UeXBlIjoidHgifQ==", "tx_signature": "N1ii0dikr0NJRvi7GXkjXOayD+mVcMfXF+49iOmOneYqYj2HHYzNm3Txj/otW/K7Dh3uBJ2Gb4nlTJW2AY3Dog==", "public_key": "ICBszM0aHCpWmDdEC3GMBL6DFN7XdWzijF33uvmWKMa1WbvWBk33+G9E4pSztJWlwDkvEt4dW4oGY8/sY2FJBtPG", "tx_encode_hash": "b3b8f15852efddbdfe8aa759a2f026488350b6f56a4cae7494ea3cbba0f8a5c5"} }' 192.168.1.51:11190
 ```
 
+#### python示例
+
+```python
+# 调用send_tx rpc接口发送交易
+# @param tx_data 创建交易体(create_tx_message)返回的tx_data
+# @param tx_signature 生成签名信息（generate_sign）返回的message信息
+# @param public_key 生成钱包地址、公钥和私钥（generate_wallet）返回的public_key
+# @param tx_encode_hash 创建交易体(create_tx_message)返回的tx_encode_hash
+def send_tx(tx_data, tx_signature, public_key, tx_encode_hash):
+    data = {
+	    "jsonrpc": "2.0",
+	    "id": "1",
+	    "method": "send_tx",
+	    "params": {
+		    "tx_data": tx_data,
+		    "tx_signature": tx_signature,
+		    "public_key": public_key,
+		    "tx_encode_hash": tx_encode_hash
+	    }
+    }
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+    res = requests.post(
+        url=domain,
+        data=json.dumps(data),
+        headers=headers)
+    result = json.loads(res.text)
+```
+
 
 
 ### 七、获取最近100块高度的平均交易燃料费 （get_avg_fee）
@@ -456,6 +614,26 @@ avg_fee         字符串类型		最近100个高度区块fee的平均值,如果�
 #### 示例
 ```
 curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{"jsonrpc": "2.0", "method": "get_avg_fee", "id": "1" }' 192.168.1.51:11190
+```
+
+#### python示例
+
+```python
+# 获取最近100块高度的平均交易燃料费
+def get_avg_fee():
+    data = {
+        "jsonrpc": "2.0",
+	    "id": "1",
+	    "method": "get_avg_fee"
+    }
+    headers = {
+        "Content-Type": "application/json"
+    }
+    res = requests.post(
+        url=domain,
+        data=json.dumps(data),
+        headers=headers)
+    print(res.text)
 ```
 
 
@@ -509,6 +687,36 @@ public_key  字符串类型 		base64编码后的公钥
 #### 示例
 ```
 curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{"jsonrpc": "2.0", "method": "generate_wallet", "id": "1" }' 192.168.1.51:11190
+```
+
+#### python示例
+
+```python
+# 通过调用generate_wallet rpc接口，生成钱包地址和相应的公私钥
+def generate_wallet():
+    data = {
+        "jsonrpc": "2.0",
+        "id": "1",
+        "method": "generate_wallet"
+    }
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+    res = requests.post(
+        url=domain,
+        data=json.dumps(data),
+        headers=headers)
+
+    result = json.loads(res.text)
+    address = result["result"]["address"]
+    private_key = result["result"]["private_key"]
+    public_key = result["result"]["public_key"]
+    dict_list = {'address': address,
+                 'private_key': private_key, 'public_key': public_key}
+    
+    return_value = json.dumps(dict_list)
+    return return_value
 ```
 
 
@@ -565,6 +773,40 @@ message  		字符串类型		base64编码后的已签名信息
 #### 示例
 ```
 curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{"jsonrpc": "2.0", "method": "generate_sign", "id": "1", "params": { "data": "b3b8f15852efddbdfe8aa759a2f026488350b6f56a4cae7494ea3cbba0f8a5c5", "private_key": "xAEF+gTQZ6PmtH3hlmygJpAVxBpKHBa3Zw8iMxRjlbQ=" } }' 192.168.1.51:11190
+```
+
+#### python示例
+
+```python
+# 调用generate_sign rpc接口进行签名
+# @param tx_encode_hash 创建交易体(create_tx_message)返回的tx_encode_hash
+# @param private_key 生成钱包地址、公钥和私钥(generate_wallet)返回的private_key
+def generate_sign(tx_encode_hash, private_key):
+    data = {
+        "jsonrpc": "2.0",
+        "id": "1",
+        "method": "generate_sign",
+  	    "params": {
+		    "data": tx_encode_hash,
+		    "private_key": private_key
+	    }
+    }
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+    res = requests.post(
+        url=domain,
+        data=json.dumps(data),
+        headers=headers)
+    
+    result = json.loads(res.text)
+    # 获取签名之后返回的message
+    message = result["result"]["message"]
+    # 将message封装成json格式
+    dict_list = {"message": message}
+    return_value = json.dumps(dict_list)
+    return return_value
 ```
 
 
@@ -635,6 +877,31 @@ transaction     数组类型        交易内容,包括交易的哈希，发起�
 curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{"jsonrpc": "2.0", "method": "get_pending_transaction", "id": "1", "params": { "address": "1MpeeKXwH1ArnMJ85D161yfH1us471J86X"} }' 192.168.1.51:11190
 ```
 
+#### python示例
+
+```python
+# 查询正在挂起的交易
+def get_pending_transaction():
+    address = input("请输入要查询的地址:")
+    data = {
+        "jsonrpc": "2.0",
+        "id": "1",
+        "method": "get_pending_transaction",
+  	    "params": {
+		    "address": address
+	    }
+    }
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+    res = requests.post(
+        url=domain,
+        data=json.dumps(data),
+        headers=headers)
+    print(res.text)
+```
+
 
 
 ### 十一、查询失败的交易（get_failure_transaction）
@@ -701,6 +968,175 @@ transaction     数组类型        失败的交易内容,包括交易的哈希�
 #### 示例
 ```
 curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{"jsonrpc": "2.0", "method": "get_failure_transaction", "id": "1", "params": { "address": "1MpeeKXwH1ArnMJ85D161yfH1us471J86X"} }' 192.168.1.51:11190
+```
+
+#### python示例
+
+```python
+# 查询失败的交易
+def get_failure_transaction():
+    address = input("请输入要查询的地址:")
+    data = {
+        "jsonrpc": "2.0",
+        "id": "1",
+        "method": "get_failure_transaction",
+  	    "params": {
+		    "address": address
+	    }
+    }
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+    res = requests.post(
+        url=domain,
+        data=json.dumps(data),
+        headers=headers)
+    result = json.loads(res.text)
+```
+
+
+
+### 十二、获取块信息列表（get_block_info_list）
+
+#### 请求
+
+``` 
+{
+  "jsonrpc": "2.0",
+  "id": "1",
+  "method": "get_block_info_list",
+  	"params": {
+		"index": 15,
+        "count": 3,
+        "type": 0
+	}
+}
+```
+
+#### 返回值
+
+```
+成功返回：
+{
+    "id": "1",
+    "jsonrpc": "2.0",
+    "result": {
+        "height": [
+            [
+                {
+                    "block_hash": "b4f74ea3a735a0e6de5c4041bbecfc1b6e2a30156ad41ade7e98c9992e3141ec",
+                    "block_height": 15,
+                    "block_time": 1611132153984580,
+                    "tx": {
+                        "amount": "3099.000000",
+                        "from": [
+                            "1vkS46QffeM4sDMBBjuJBiVkMQKY7Z8Tu"
+                        ],
+                        "hash": "b9b417999b0e4d165d822e9fa9c8fdc553fdd9d6affb054d0a258f6d3db352ee",
+                        "to": [
+                            "1MpeeKXwH1ArnMJ85D161yfH1us471J86X"
+                        ]
+                    }
+                }
+            ],
+            [
+                {
+                    "block_hash": "9870c60872e171b747f35e2f4e876e0792833cb8a258151e38aa1c7f72a52734",
+                    "block_height": 14,
+                    "block_time": 1611131849651811,
+                    "tx": {
+                        "amount": "3983.000000",
+                        "from": [
+                            "1vkS46QffeM4sDMBBjuJBiVkMQKY7Z8Tu"
+                        ],
+                        "hash": "98a483aa1c0b77fed0b69c36888fe6e953fe96d5432a17704e76e4f5a5bc2d64",
+                        "to": [
+                            "1TT8sdzyPhqSmSx7Wdmn1ECeEHZKosh6v"
+                        ]
+                    }
+                }
+            ],
+            [
+                {
+                    "block_hash": "e79fb3d28be54e12a7e5ae9c21d91cefc6ba0d8f25681717d07348b569083f3f",
+                    "block_height": 13,
+                    "block_time": 1611050624949290,
+                    "tx": {
+                        "amount": "2349.000000",
+                        "from": [
+                            "1vkS46QffeM4sDMBBjuJBiVkMQKY7Z8Tu"
+                        ],
+                        "hash": "bfe2bf795003c2960d09ad03b1d9dd5bc2109c3eba3fe790fd2001f43ce1fc8b",
+                        "to": [
+                            "1MpeeKXwH1ArnMJ85D161yfH1us471J86X"
+                        ]
+                    }
+                }
+            ]
+        ]
+    }
+}
+失败返回：
+{
+    "error": {
+        "code": -1,
+        "message": "Parameter is wrong!"
+    },
+    "id": "1",
+    "jsonrpc": "2.0"
+}
+```
+
+#### 字段说明
+
+```
+请求：
+index           数值类型        块最高起始索引地址。可以指定0，从当前最高块读取
+count           数值类型        要读取的块的个数，从高向低列出
+type            数值类型        默认为0，以后扩展使用
+响应：
+height          数组类型        每一高度层的块数据
+block_hash      字符串类型      块的哈希
+block_height    数值类型        块所在的高度
+block_time      数值类型        建块的时间
+amount          字符串类型      交易金额
+from            数组类型        交易发起者
+hash            字符串类型      交易哈希
+to              数组类型        交易接收者
+```
+
+#### 示例
+
+```
+curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{"jsonrpc": "2.0", "method": "get_block_info_list", "id": "1", "params": { "index": 15, "count": 3, "type": 0} }' 192.168.1.51:11190
+```
+
+#### python示例
+
+```python
+# 获取块信息列表
+def get_block_info_list():
+    data = {
+        "jsonrpc": "2.0",
+        "id": "1",
+        "method": "get_block_info_list",
+  	    "params": {
+		    "index": 15,
+            "count": 3,
+            "type": 0
+	    }
+    }
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+    res = requests.post(
+        url=domain,
+        data=json.dumps(data),
+        headers=headers)
+    print("get_block_info_list res.text:", res.text)
+    result = json.loads(res.text)
 ```
 
 
